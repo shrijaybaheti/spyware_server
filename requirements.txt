@@ -3,3 +3,4 @@ Flask-SocketIO
 eventlet
 pynput
 python-socketio
+gunicorn
