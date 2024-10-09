@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Desktop Control</title>
+</head>
+<body>
+    <h1>Remote Desktop Control Interface</h1>
+    <button onclick="sendCommand('start')">Start Control</button>
+    <button onclick="sendCommand('stop')">Stop Control</button>
+    <div id="status"></div>
+
+    <script>
+        const ws = new WebSocket('wss://your-backend-url.onrender.com/ws'); // Use the correct backend WebSocket URL
+
+        ws.onopen = function() {
+            document.getElementById('status').textContent = 'WebSocket connection opened';
+        };
+
+        ws.onmessage = function(event) {
+            document.getElementById('status').textContent = 'Received: ' + event.data;
+        };
+
+        ws.onclose = function() {
+            document.getElementById('status').textContent = 'WebSocket connection closed';
+        };
+
+        function sendCommand(command) {
+            ws.send(command); // Send a control command to the WebSocket server
+            document.getElementById('status').textContent = 'Sent command: ' + command;
+        }
+    </script>
+</body>
+</html>
