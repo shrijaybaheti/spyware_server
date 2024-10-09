@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Screen Control</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <title>Remote Desktop Control</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body>
-    <h1>Live Screen</h1>
-    <img src="http://your-backend-url/video_feed" alt="Live Screen" style="width: 80%;"/>
-    <input type="text" id="command" placeholder="Type your command...">
-    <button id="send">Send Command</button>
+    <h1>Remote Desktop Control</h1>
+    <input id="commandInput" type="text" placeholder="Enter command (e.g., /click x y or /type 'text')"/>
+    <button id="sendCommand">Send Command</button>
+    <div id="response"></div>
 
     <script>
-        const socket = io('http://your-backend-url'); // Replace with your backend URL
+        const socket = io();
 
-        document.getElementById('send').onclick = () => {
-            const command = document.getElementById('command').value;
-            socket.emit('command', command);
-            document.getElementById('command').value = ''; // Clear input
+        document.getElementById('sendCommand').onclick = function() {
+            const command = document.getElementById('commandInput').value;
+            socket.emit('command', { command: command });
+            document.getElementById('response').innerText = 'Command sent: ' + command;
         };
     </script>
 </body>
