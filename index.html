@@ -3,33 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remote Desktop Control</title>
+    <title>Live Screen Control</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
 </head>
 <body>
-    <h1>Remote Desktop Control Interface</h1>
-    <button onclick="sendCommand('start')">Start Control</button>
-    <button onclick="sendCommand('stop')">Stop Control</button>
-    <div id="status"></div>
+    <h1>Live Screen</h1>
+    <img src="http://your-backend-url/video_feed" alt="Live Screen" style="width: 80%;"/>
+    <input type="text" id="command" placeholder="Type your command...">
+    <button id="send">Send Command</button>
 
     <script>
-        const ws = new WebSocket('wss://https://spyware-remote-control-backend.onrender.com//ws'); // Use the correct backend WebSocket URL
+        const socket = io('http://your-backend-url'); // Replace with your backend URL
 
-        ws.onopen = function() {
-            document.getElementById('status').textContent = 'WebSocket connection opened';
+        document.getElementById('send').onclick = () => {
+            const command = document.getElementById('command').value;
+            socket.emit('command', command);
+            document.getElementById('command').value = ''; // Clear input
         };
-
-        ws.onmessage = function(event) {
-            document.getElementById('status').textContent = 'Received: ' + event.data;
-        };
-
-        ws.onclose = function() {
-            document.getElementById('status').textContent = 'WebSocket connection closed';
-        };
-
-        function sendCommand(command) {
-            ws.send(command); // Send a control command to the WebSocket server
-            document.getElementById('status').textContent = 'Sent command: ' + command;
-        }
     </script>
 </body>
 </html>
