@@ -1,36 +1,19 @@
-import cv2
-import numpy as np
-import pyautogui
-from flask import Flask, Response
+from flask import Flask, render_template
 from flask_socketio import SocketIO
+import os
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-@app.route('/video_feed')
-def video_feed():
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-def generate_frames():
-    while True:
-        img = pyautogui.screenshot()
-        frame = np.array(img)
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        _, buffer = cv2.imencode('.jpg', frame)
-        frame = buffer.tobytes()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @socketio.on('command')
 def handle_command(data):
-    if data.startswith('/click'):
-        coords = data.split('(')[1].strip(')').split(',')
-        x, y = int(coords[0]), int(coords[1])
-        pyautogui.click(x, y)
-        
-    elif data.startswith('/type'):
-        text = data.split('"')[1]
-        pyautogui.typewrite(text)
+    # Send command to the client script
+    socketio.emit('command', {'command': data['command']})
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
+    # Make sure to set the host and port according to your deployment
+    socketio.run(app, host='0.0.0.0', port=int(os.environ.get('PORT', 10000)))
